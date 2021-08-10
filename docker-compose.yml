@@ -1,0 +1,7 @@
+version: '3'
+services:
+  frontend_reactjs_yt:
+    build: ./frontend
+    ports:
+      - '80:80'
+      - '4012:9090'
