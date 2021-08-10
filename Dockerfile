@@ -1,10 +1,16 @@
-FROM node:alpine as builder
-WORKDIR '/app'
-COPY package*.json ./
-RUN npm install
+# build environment
+FROM node:alpine as react_build
+WORKDIR /app
 COPY . .
-RUN npm run build
+RUN yarn
+RUN yarn build
 
-FROM nginx
+# production environment
+FROM nginx:stable-alpine
+
+COPY --from=react_build /app/build /usr/share/nginx/html
+COPY --from=react_build /app/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
 EXPOSE 80
-COPY --from=builder /app/build /usr/share/nginx/html
+
+CMD ["nginx", "-g", "daemon off;"]
